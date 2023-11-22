@@ -2,7 +2,9 @@ import TodoList from "./todo";
 
 const todoInput = document.getElementById("todoInput");
 const addBtn = document.getElementById("addBtn");
-const listTodo = document.getElementById("listTodo")
+const listTodo = document.getElementById("listTodo");
+const done = document.getElementById('done');
+const notDone = document.getElementById('notDone');
 
 const todoList = new TodoList;
 
@@ -25,35 +27,36 @@ listTodo.addEventListener('click', (e) => {
             removeTodo(id);
             break;
         case 'toggle': 
-            toggle(target);
+            toggle(id, target);
             break;
     }
+    renderTodo();
 })
 
 const removeTodo = (id) => {
     todoList.removeTodo(id);
-    renderTodo();
 }
 
-const toggle = (target) => {
-    target.classList.toggle('todo-completed');
-    target.textContent = target.classList.contains('todo-completed') ? "Done" : "Not Done";
+const toggle = (id) => {
+    todoList.toggleTodoCompleted(id);
 }
 
 const renderTodo = () => {
     const todos = todoList.getTodos();
     let html = ''
-    const isComplete = false;
-    const completedClass = isComplete ? 'todo-completed' : '';
     todos.forEach(todo => {
+        const buttonText = todo.isDone ? 'Done' : 'Not Done';
         html += 
         `
-        <div class="todoItem ${completedClass}" id="${todo.id}">
+        <div class="todoItem" id="${todo.id}">
             <p>${todo.description}</p>
-            <button data-action="toggle" data-id="${todo.id}">Not done</button>
+            <button data-action="toggle" data-id="${todo.id} id="${todo.id}">${buttonText}</button>
             <button data-action="remove" data-id="${todo.id}">remove</button>
          </div>
         `
     });
     listTodo.innerHTML = html;
+    done.textContent = `Number of Done: ${todoList.getCompletedCount()}`;
+    notDone.textContent = `Number of not Done: ${todoList.getTodos().length - todoList.getCompletedCount()}`;
+    console.log(todoList.getTodos());
 }

@@ -3,6 +3,7 @@ export class Todo {
     constructor(description) {
         this.id = Todo.runningId++;
         this.description = description;
+        this.isDone = false;
     }
 
     getTodo() {
@@ -25,6 +26,13 @@ export default class TodoList {
         return newTodo.id;
     }
 
+    toggleTodoCompleted(id) {
+        const todo = this.findTodo(id);
+        if (todo) {
+            todo.isDone = !todo.isDone;
+        }
+    }
+
     findTodo(searchId) {
         return this.todos.find(todo => todo.id === searchId);
     }
@@ -42,5 +50,9 @@ export default class TodoList {
 
     getTodos() {
         return this.todos;
+    }
+
+    getCompletedCount() {
+        return this.todos.filter(todo => todo.isDone).length;
     }
 }
