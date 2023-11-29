@@ -20,38 +20,56 @@ addBtn.addEventListener("click", () => {
   let todoValue = todoInput.value;
   if (!todoValue.trim()) alert("Enter todo to proceed!");
   addTodo(todoValue);
+  todoInput.value = "";
+  updateCounters();
 });
 
+function toggle(todo, toggleButton) {
+  todoList.toggleTodoCompleted(todo.id);
+  toggleButton.textContent = todo.isDone ? "Done" : "Not Done";
+  updateCounters();
+}
+
+function remove(todo) {
+  todoList.removeTodo(todo.id);
+  const todoElement = document.getElementById(todo.id);
+  if (todoElement) {
+    todoElement.parentNode.removeChild(todoElement);
+  }
+  updateCounters();
+}
+
 const createTodoElement = (todo) => {
+  const currentTodo = todoList.findTodo(todo.id);
   const div = document.createElement("div");
-  div.className = "todoItem";
-  div.id = `todo-${todo.id}`;
+  div.setAttribute("id", todo.id);
 
   const p = document.createElement("p");
   p.textContent = todo.description;
 
   const toggleButton = document.createElement("button");
-  toggleButton.setAttribute("data-action", "toggle");
-  toggleButton.setAttribute("data-id", todo.id);
-  toggleButton.textContent = todo.isDone ? "Done" : "Not Done";
-  toggleButton.addEventListener("click", () => toggle(todo.id));
+  const toggleAttribute = document.createAttribute("id");
+  toggleAttribute.value = todo.id;
+  toggleButton.setAttributeNode(toggleAttribute);
+  toggleButton.addEventListener("click", () => toggle(currentTodo, toggleButton));
+  toggleButton.textContent = currentTodo.isDone ? "Done" : "Not Done";
 
-  const removeButton = document.createElement("button");
-  removeButton.setAttribute("data-action", "remove");
-  removeButton.setAttribute("data-id", todo.id);
-  removeButton.textContent = "remove";
-  removeButton.addEventListener("click", () => removeTodo(todo.id));
+  const deleteButton = document.createElement("button");
+  const deleteAttribute = document.createAttribute("id");
+  deleteAttribute.value = todo.id;
+  deleteButton.setAttributeNode(deleteAttribute);
+  deleteButton.textContent = "remove";
+  deleteButton.addEventListener("click", () => remove(todo));
 
   div.appendChild(p);
   div.appendChild(toggleButton);
-  div.appendChild(removeButton);
-
+  div.appendChild(deleteButton);
   return div;
 };
 
 const updateCounters = () => {
-    done.textContent = `Number of Done: ${todoList.getCompletedCount()}`;
-    notDone.textContent = `Number of not Done: ${
-      todoList.getTodos().length - todoList.getCompletedCount()
-    }`;
-  };
+  done.textContent = `Number of Done: ${todoList.getCompletedCount()}`;
+  notDone.textContent = `Number of not Done: ${
+    todoList.getTodos().length - todoList.getCompletedCount()
+  }`;
+};

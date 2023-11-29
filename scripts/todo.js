@@ -7,7 +7,7 @@ export class Todo {
     }
 
     getTodo() {
-        return { id: this.id, description: this.description };
+        return { id: this.id, description: this.description, isDone: this.isDone };
     }
 
     setDescription(newDescription) {
