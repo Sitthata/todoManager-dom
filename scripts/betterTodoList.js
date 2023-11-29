@@ -1,4 +1,4 @@
-import TodoList from "./todo";
+import TodoList, { Todo } from "./todo";
 
 const todoInput = document.getElementById("todoInput");
 const addBtn = document.getElementById("addBtn");
@@ -9,6 +9,18 @@ const notDone = document.getElementById("notDone");
 // create a new todoList
 const todoList = new TodoList();
 
+// Storage
+window.addEventListener("DOMContentLoaded", () => {
+  const storedTodos = localStorage.getItem("todos");
+
+  if (storedTodos) {
+    const parsedTodos = JSON.parse(storedTodos);
+    todoList.setTodos(parsedTodos);
+  }
+
+  renderTodo();
+})
+
 addBtn.addEventListener("click", () => {
   function addTodo(todoValue) {
     const todoId = todoList.addTodo(todoValue);
@@ -16,7 +28,7 @@ addBtn.addEventListener("click", () => {
     const todoElement = createTodoElement(addedTodo);
     listTodo.appendChild(todoElement);
   }
-
+  console.log(todoList.getTodos());
   let todoValue = todoInput.value;
   if (!todoValue.trim()) alert("Enter todo to proceed!");
   addTodo(todoValue);
@@ -24,20 +36,27 @@ addBtn.addEventListener("click", () => {
   updateCounters();
 });
 
-function toggle(todo, toggleButton) {
+const renderTodo = () => {
+  todoList.getTodos().forEach((todo) => {
+    const todoUi = createTodoElement(todo);
+    listTodo.appendChild(todoUi);
+  })
+}
+
+const toggle = (todo, toggleButton) => {
   todoList.toggleTodoCompleted(todo.id);
   toggleButton.textContent = todo.isDone ? "Done" : "Not Done";
   updateCounters();
-}
+};
 
-function remove(todo) {
+const remove = (todo) => {
   todoList.removeTodo(todo.id);
   const todoElement = document.getElementById(todo.id);
   if (todoElement) {
     todoElement.parentNode.removeChild(todoElement);
   }
   updateCounters();
-}
+};
 
 const createTodoElement = (todo) => {
   const currentTodo = todoList.findTodo(todo.id);
@@ -69,7 +88,10 @@ const createTodoElement = (todo) => {
 
 const updateCounters = () => {
   done.textContent = `Number of Done: ${todoList.getCompletedCount()}`;
-  notDone.textContent = `Number of not Done: ${
-    todoList.getTodos().length - todoList.getCompletedCount()
-  }`;
+  notDone.textContent = `Number of not Done: ${todoList.getTodos().length - todoList.getCompletedCount()
+    }`;
 };
+
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem("todos", JSON.stringify(todoList.getTodos()));
+})

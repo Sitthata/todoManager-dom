@@ -20,6 +20,10 @@ export default class TodoList {
         this.todos = [];
     }
 
+    setTodos(todos) {
+        this.todos = todos;
+    }
+
     addTodo(desc) {
         const newTodo = new Todo(desc);
         this.todos.push(newTodo);
