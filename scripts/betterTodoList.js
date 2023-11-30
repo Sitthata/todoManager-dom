@@ -1,4 +1,5 @@
-import TodoList, { Todo } from "./todo";
+import TodoList from "./todo";
+const createTodoElement = require("createTodoElement");
 
 const todoInput = document.getElementById("todoInput");
 const addBtn = document.getElementById("addBtn");
@@ -19,7 +20,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   renderTodo();
-})
+});
 
 addBtn.addEventListener("click", () => {
   function addTodo(todoValue) {
@@ -40,8 +41,8 @@ const renderTodo = () => {
   todoList.getTodos().forEach((todo) => {
     const todoUi = createTodoElement(todo);
     listTodo.appendChild(todoUi);
-  })
-}
+  });
+};
 
 const toggle = (todo, toggleButton) => {
   todoList.toggleTodoCompleted(todo.id);
@@ -70,7 +71,9 @@ const createTodoElement = (todo) => {
   const toggleAttribute = document.createAttribute("id");
   toggleAttribute.value = todo.id;
   toggleButton.setAttributeNode(toggleAttribute);
-  toggleButton.addEventListener("click", () => toggle(currentTodo, toggleButton));
+  toggleButton.addEventListener("click", () =>
+    toggle(currentTodo, toggleButton)
+  );
   toggleButton.textContent = currentTodo.isDone ? "Done" : "Not Done";
 
   const deleteButton = document.createElement("button");
@@ -88,10 +91,12 @@ const createTodoElement = (todo) => {
 
 const updateCounters = () => {
   done.textContent = `Number of Done: ${todoList.getCompletedCount()}`;
-  notDone.textContent = `Number of not Done: ${todoList.getTodos().length - todoList.getCompletedCount()
-    }`;
+  notDone.textContent = `Number of not Done: ${
+    todoList.getTodos().length - todoList.getCompletedCount()
+  }`;
 };
 
+// Save todos in local storage before user reload or close browser
 window.addEventListener("beforeunload", () => {
   localStorage.setItem("todos", JSON.stringify(todoList.getTodos()));
-})
+});
